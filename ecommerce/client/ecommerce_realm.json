@@ -1,0 +1,157 @@
+{
+    "realm": "ecommerce",
+    "enabled": true,
+    "requiredCredentials": [
+      "password"
+    ],
+    "users": [
+      {
+        "username": "user1",
+        "enabled": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "user1"
+          }
+        ],
+        "realmRoles": [
+          "user"
+        ]
+      },
+      {
+        "username": "admin1",
+        "enabled": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "admin1"
+          }
+        ],
+        "realmRoles": [
+          "user",
+          "admin_user"
+        ]
+      },
+      {
+        "username": "service-account-go-grpc-client",
+        "enabled": true,
+        "serviceAccountClientId": "go-grpc-client",
+        "clientRoles": {
+          "go-grpc-client" : ["uma_protection"]
+        }
+      }
+    ],
+    "roles": {
+      "realm": [
+        {
+          "name": "user",
+          "description": "User privileges"
+        },
+        {
+          "name": "admin_user",
+          "description": "Admin privileges"
+        }
+      ]
+    },
+    "clients": [
+      {
+        "clientId": "go-grpc-client",
+        "enabled": true,
+        "baseUrl": "http://localhost:50051/ecommerce.EcommerceService",
+        "adminUrl": "http://localhost:50051/ecommerce.EcommerceService",
+        "bearerOnly": false,
+        "redirectUris": [
+          "http://localhost:50051/ecommerce.EcommerceService/*",
+          "http://127.0.0.1:50051/ecommerce.EcommerceService/*"
+        ],
+        "secret": "secret",
+        "authorizationServicesEnabled": true,
+        "directAccessGrantsEnabled": true,
+        "authorizationSettings": {
+          "resources": [
+            {
+              "name": "Protected Resource",
+              "uri": "/*",
+              "type": "http://localhost:50051/ecommerce.EcommerceService",
+              "scopes": [
+                {
+                  "name": "urn:go-grpc-client:ecommerce.EcommerceService:protected:resource:access"
+                }
+              ]
+            },
+            {
+              "name": "Admin Resource",
+              "uri": "/*",
+              "type": "http://localhost:50051/ecommerce.EcommerceService",
+              "scopes": [
+                {
+                  "name": "urn:go-grpc-client:ecommerce.EcommerceService:protected:resource:access"
+                }
+              ]
+
+            }
+          ],
+          "policies": [
+            {
+              "name": "Any User Policy",
+              "description": "Defines that any user can do something",
+              "type": "role",
+              "logic": "POSITIVE",
+              "decisionStrategy": "UNANIMOUS",
+              "config": {
+                "roles": "[{\"id\":\"user\"}]"
+              }
+            },
+            {
+              "name": "Only Admin Policy",
+              "description": "Defines that only admin users can do something",
+              "type": "role",
+              "logic": "POSITIVE",
+              "decisionStrategy": "UNANIMOUS",
+              "config": {
+                "roles": "[{\"id\":\"admin_user\"}]"
+              }
+            },
+            {
+              "name": "All Users Policy",
+              "description": "Defines that all users can do something",
+              "type": "aggregate",
+              "logic": "POSITIVE",
+              "decisionStrategy": "AFFIRMATIVE",
+              "config": {
+                "applyPolicies": "[\"Any User Policy\",\"Only Admin Policy\"]"
+              }
+            },            
+            {
+              "name": "Admin Resource Permission",
+              "description": "A policy that defines access to admin resources",
+              "type": "resource",
+              "logic": "POSITIVE",
+              "decisionStrategy": "UNANIMOUS",
+              "config": {
+                "resources": "[\"Admin Resource\"]",
+                "applyPolicies": "[\"Only Admin Policy\"]"
+              }
+            },
+            {
+              "name": "Protected Resource Permission",
+              "description": "A policy that defines access to any protected resource",
+              "type": "resource",
+              "logic": "POSITIVE",
+              "decisionStrategy": "UNANIMOUS",
+              "config": {
+                "resources": "[\"Protected Resource\"]",
+                "applyPolicies": "[\"All Users Policy\"]"
+              }
+            }            
+          ],
+          "scopes": [
+            {
+              "name": "urn:go-grpc-client:ecommerce.EcommerceService:protected:resource:access"
+            }
+          ]
+        }
+      }
+    ]
+  }
+  

@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package ecommerce;
+
+option go_package="go-grpc.com/grpc-go-course/ecommerce/proto";
+
+message User {
+    int64 user_id = 1;    
+    string first_name = 2;
+    string last_name = 3;    
+    string email_address = 4; 
+}
+
+message Ticket {
+    int64 ticket_id = 1;
+    int64 user_id = 2;      
+    string from = 3;
+    string to = 4;    
+    double price = 5;
+    string section = 6;
+    int32 seat = 7; 
+}
+
+message SubmitPuchaseRequest {
+    int64 user_id = 1;
+    Ticket ticket = 2;    
+}
+
+message SubmitPuchaseResponse {
+    User user = 1;
+    Ticket ticket = 2;
+}
+
+message GetTicketDetailsRequest {
+    int64 ticket_id = 1;    
+}
+
+message GetTicketDetailsResponse {
+    Ticket ticket = 1;
+}
+
+message GetUserSeatDetailsBySectionRequest {
+    string section = 1;   
+}
+
+message PurchasedTicket {
+    User user = 1;
+    Ticket ticket = 2;
+}
+
+message GetUserSeatDetailsBySectionResponse {
+    repeated PurchasedTicket purchasedTickets = 1;
+}
+
+message DeleteUserPurchaseRequest {
+    int64 ticket_id = 1;     
+}
+
+message DeleteUserPurchaseResponse {
+    int64 ticket_id = 1;     
+}
+
+message UpdateUserPuchaseRequest {
+    int64 ticket_id = 1;
+    int32 seat = 2;
+}
+
+message UpdateUserPuchaseResponse {
+    Ticket ticket = 1;
+}
+
+service EcommerceService {
+    rpc SubmitPuchase (SubmitPuchaseRequest) returns (SubmitPuchaseResponse);
+    rpc GetTicketDetailsById(GetTicketDetailsRequest) returns (GetTicketDetailsResponse);
+    rpc GetUserSeatDetailsBySection(GetUserSeatDetailsBySectionRequest) returns (GetUserSeatDetailsBySectionResponse);
+    rpc DeleteUserPurchase (DeleteUserPurchaseRequest) returns (DeleteUserPurchaseResponse);
+    rpc UpdateUserPuchase (UpdateUserPuchaseRequest) returns (UpdateUserPuchaseResponse);     
+};
