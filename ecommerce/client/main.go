@@ -37,8 +37,14 @@ func main() {
 	}
 	ctx := context.Background()
 
+	// TODO: on the server side, use the hashed password, use bcrypt to hash the password first
+	//TODO: define a method on the user to check if a given password is correct or not. 
+	// (call bcrypt.CompareHashAndPassword() function, 
+	// pass in the user’s hashed password, and the given plaintext password. 
+	// return true if error is nil)
+
 	// get a token
-	token, err := config.PasswordCredentialsToken(ctx, getConfig("KEYCLOAK_ADMIN_USERNAME"), getConfig("KEYCLOAK_ADMIN_PASSWORD"))
+	token, err := config.PasswordCredentialsToken(ctx, getConfig("KEYCLOAK_USERNAME"), getConfig("KEYCLOAK_PASSWORD"))
 
 	if err != nil {
 		panic(err)

@@ -2,6 +2,7 @@
 1. generate certificates (scripts in ssl can be useful)
 2. make server, client 
 poc-go-grpc-keycloak> make ecommerce
+(protoc -Iecommerce/proto --go_opt=module=go-grpc.com/grpc-go-course --go_out=. --go-grpc_opt=module=go-grpc.com/grpc-go-course --go-grpc_out=. ecommerce/proto/*.proto)
 3. start keycloack in doker; configure admin on 8180 (the project configuration and the keycloack configuration are provided in .env file )
 4. import realm (ecommerce/realm_import.json) or configure realm, client, user, roles manually
 5. start server in terminal

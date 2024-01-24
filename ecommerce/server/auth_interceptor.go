@@ -83,6 +83,10 @@ func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
 
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string) error {
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
+    accessibleRoles = strings.Split(accessibleRoles[0], ",")
+	for i, v := range accessibleRoles {
+        accessibleRoles[i] = strings.TrimSpace(v)
+    }
 	if !ok {
 		return nil
 	}
@@ -95,9 +99,7 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	}
 	
 	if ok {
-		log.Println("--> authorize interceptor: got metadata from IncomingContext")
 		values = md.Get("authorization")
-		log.Println("--> authorize interceptor: got values from IncomingContext", values)		
 	}
 
 	if len(values) == 0 {
@@ -105,7 +107,6 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	}
 	if len(values) > 0 {
 		accessToken = values[0]
-		log.Println("--> authorize interceptor: accessToken from values[0]", accessToken)			
 	}
 	accessToken = strings.Replace(accessToken, "Bearer ", "", 1)
 	// call Keycloak API to verify the access token
@@ -126,22 +127,18 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	// check if the token isn't expired and valid
 	if !*result.Active {
 		log.Fatalf("Invalid or expired Token %v", http.StatusUnauthorized)
-
 	}
 	roles, err := interceptor.jwtManager.Verify(accessToken)
 	if err != nil {
 		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
-	log.Println("-->returned to interceptor from Verify--> roles : ", strings.Join(roles, ","))
 	for _, accessibleRole := range accessibleRoles {
 		for _, role := range roles {
-			log.Println("--> authorize interceptor: role", role)
-			if strings.Contains(accessibleRole, role) {
+			if (accessibleRole == role) {
 				return nil
 			}
 		}
 	}
-
-	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
+	return status.Error(codes.PermissionDenied, "User does not have permission to access this RPC")
 
 }
