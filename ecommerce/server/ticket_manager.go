@@ -11,7 +11,7 @@ import (
 
 // ticket manager
 type TicketManager struct {
-	tickets []pb.Ticket
+	tickets []*pb.Ticket
 }
 var ticketsLock = &sync.Mutex{}
 var lastTicketId int64 = 2
@@ -26,7 +26,7 @@ func NewTicketManager() *TicketManager {
 	return &TicketManager{}
 }
 
-func (TicketManager *TicketManager) addTicket(ticket pb.Ticket) {
+func (TicketManager *TicketManager) addTicket(ticket *pb.Ticket) {
 	ticketsLock.Lock()
 	defer ticketsLock.Unlock()
 	ticket.TicketId = newTicketId()
@@ -59,7 +59,7 @@ func (TicketManager *TicketManager) ticketById(Id int64) (*pb.Ticket, error) {
 
 	for _, ticket := range TicketManager.tickets {
 		if ticket.TicketId == Id {
-			return &ticket, nil
+			return ticket, nil
 		}
 	}
 	return nil, errors.NotFound("not found: ticket %d", Id)
@@ -74,7 +74,7 @@ func (TicketManager *TicketManager) seatDetailsBySection(ticketSection string) (
 			purchasedTicket := &pb.PurchasedTicket{}
 
 			user, _ := userManager.userById(ticket.UserId)
-			purchasedTicket.Ticket = &ticket
+			purchasedTicket.Ticket = ticket
 			purchasedTicket.User = user			
 			detailsBySection = append(detailsBySection, purchasedTicket)
 		

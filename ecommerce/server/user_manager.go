@@ -11,7 +11,7 @@ import (
 
 // User manager
 type UserManager struct {
-	users []pb.User
+	users []*pb.User
 }
 var usersLock = &sync.Mutex{}
 var lastUserId int64 = 2
@@ -30,8 +30,8 @@ func (userManager *UserManager) CreateUsersInDB() (error) {
 		EmailAddress:  "admin1@gmail.com",
 	}
 
-	userManager.addUser(*user1)
-	userManager.addUser(*admin1)
+	userManager.addUser(user1)
+	userManager.addUser(admin1)
 	return nil
 }
 
@@ -45,7 +45,8 @@ func NewUserManager() *UserManager {
 	return &UserManager{}
 }
 
-func (userManager *UserManager)  addUser(user pb.User) {
+func (userManager *UserManager)  addUser(user *pb.User) {
+
 	usersLock.Lock()
 	defer usersLock.Unlock()
 	user.UserId = newUserId()
@@ -57,7 +58,7 @@ func (userManager *UserManager) userById(Id int64) (*pb.User, error) {
 
 	for _, user := range userManager.users {
 		if user.UserId == Id {
-			return &user, nil
+			return user, nil
 		}
 	}
 	return nil, errors.NotFound("not found: user %d", Id)

@@ -15,7 +15,7 @@ func (s *Server) SubmitPuchase(ctx context.Context, req *pb.SubmitPuchaseRequest
 	UserId := req.UserId
 	user, _ := userManager.userById(UserId)
 	ticket := req.GetTicket()
-	ticketManager.addTicket(*ticket)
+	ticketManager.addTicket(ticket)
 
 	return &pb.SubmitPuchaseResponse{
 		User: &pb.User{
@@ -55,13 +55,14 @@ func (s *Server) GetUserSeatDetailsBySection(ctx context.Context, req *pb.GetUse
 	return &pb.GetUserSeatDetailsBySectionResponse{PurchasedTickets: details}, nil
 }
 func (s *Server) DeleteUserPurchase(ctx context.Context, req *pb.DeleteUserPurchaseRequest) (*pb.DeleteUserPurchaseResponse, error) {
-	log.Print("Delete User Purchase request")
+	log.Printf("DelDeleteUserPurchase function was invoked %v\n", req)
 	id := req.TicketId
 	ticketManager.deleteTicket(id)
 	return &pb.DeleteUserPurchaseResponse{TicketId: id}, nil
 }
 
 func (s *Server) UpdateUserPuchase(ctx context.Context, req *pb.UpdateUserPuchaseRequest) (*pb.UpdateUserPuchaseResponse, error) {
+	log.Printf("UpdateUserPuchase function was invoked %v\n", req)
 	id := req.TicketId
 	seat := req.Seat
 	ticketManager.updateTicket(id, seat)
