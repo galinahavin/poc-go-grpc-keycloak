@@ -1,4 +1,9 @@
 # poc-go-grpc-keycloak
+
+==============================================
+Build and run the project
+===============================================
+
 1. generate certificates (scripts in ssl can be useful)
 2. make server, client 
 poc-go-grpc-keycloak> make ecommerce
@@ -10,6 +15,41 @@ poc-go-grpc-keycloak>  .\bin\ecommerce\server.exe
 6. start client in the other terminal window
 poc-go-grpc-keycloak> .\bin\ecommerce\client.exe
 observe different output of APIs for different user roles
+7. run unit tests which demo API are protected (RBAC with KeyCloak)
+==============================================
+Unit tests and the of output:
+===============================================
+PS C:\Users\galin\poc-go-grpc-keycloak> go test ./... -v -count=1 
+?       go-grpc.com/grpc-go-course/ecommerce/proto      [no test files]
+?       go-grpc.com/grpc-go-course/ecommerce/server     [no test files]
+=== RUN   TestGRPC
+=== RUN   TestGRPC/submitPurchaseAsRegularUser
+    ecommerce_test.go:239: In SubmitPuchase test
+=== RUN   TestGRPC/submitPurchaseAsAdminUser
+    ecommerce_test.go:239: In SubmitPuchase test
+=== RUN   TestGRPC/getTicketDetailsByIdAsRegularUser
+=== RUN   TestGRPC/getTicketDetailsByIdAsAdminUser
+=== RUN   TestGRPC/getUserSeatDetailsBySectionAsRegularUser
+    ecommerce_test.go:196: rpc error: code = PermissionDenied desc = User does not have permission to access this RPC
+=== RUN   TestGRPC/getUserSeatDetailsBySectionAsAdminUser
+=== RUN   TestGRPC/updateUserPuchaseAsRegularUser
+    ecommerce_test.go:178: rpc error: code = PermissionDenied desc = User does not have permission to access this RPC
+=== RUN   TestGRPC/updateUserPuchaseAsAdminUser
+=== RUN   TestGRPC/deleteUserPuchaseAsRegularUser
+    ecommerce_test.go:160: rpc error: code = PermissionDenied desc = User does not have permission to access this RPC
+=== RUN   TestGRPC/deleteUserPuchaseAsAdminUser
+--- PASS: TestGRPC (0.81s)
+    --- PASS: TestGRPC/submitPurchaseAsRegularUser (0.09s)
+    --- PASS: TestGRPC/submitPurchaseAsAdminUser (0.08s)
+    --- PASS: TestGRPC/getTicketDetailsByIdAsRegularUser (0.08s)
+    --- PASS: TestGRPC/getTicketDetailsByIdAsAdminUser (0.08s)
+    --- PASS: TestGRPC/getUserSeatDetailsBySectionAsAdminUser (0.08s)
+    --- PASS: TestGRPC/updateUserPuchaseAsRegularUser (0.08s)
+    --- PASS: TestGRPC/updateUserPuchaseAsAdminUser (0.08s)
+    --- PASS: TestGRPC/deleteUserPuchaseAsRegularUser (0.08s)
+    --- PASS: TestGRPC/deleteUserPuchaseAsAdminUser (0.08s)
+PASS
+ok      go-grpc.com/grpc-go-course/ecommerce/client     0.951s
 
 Example of output
 
